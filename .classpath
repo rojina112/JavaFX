@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX23"/>
+	<classpathentry kind="src" path="/PoPsection"/>
+	<classpathentry kind="lib" path="C:/Users/hp/Downloads/MyLibs.jar"/>
+	<classpathentry kind="lib" path="C:/Users/hp/Downloads/javax.mail-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/hp/Downloads/mysql-connector-j-8.0.31.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
