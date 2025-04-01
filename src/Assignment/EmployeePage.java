@@ -111,7 +111,8 @@ public class EmployeePage extends Application {
         updateButton.setLayoutY(280);
         updateButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
         updateButton.setOnAction(e -> showAlert("Update Information", "Employee information updated successfully!"));
-
+        saveButton.setOnAction(e -> showAlert("Save Information", "Employee information saved Successfully!"));
+        
         // Adding Components to Root
         root.getChildren().addAll(titleLabel, saveButton, updateButton, searchButton);
 
