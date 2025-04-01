@@ -1,25 +1,35 @@
 package Assignment;
+
+import DAO.EmployeePageDAO;
+
+import Model.EmployeePageModel;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert.AlertType;
 
 public class EmployeePage extends Application {
     private TextField employeeIDField, nameField, emailField, phoneField, addressField;
 
     @Override
     public void start(Stage primaryStage) {
+        
         // Root Pane
         AnchorPane root = new AnchorPane();
-        root.setStyle("-fx-background-color: #f4f4f4; -fx-padding: 20px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-border-color: #333;");
+        root.setStyle("-fx-padding: 20px;"); // Removed the background color, border-radius, and border-color
 
         // Title
         Label titleLabel = new Label("Employee Page");
         titleLabel.setLayoutX(150);
         titleLabel.setLayoutY(20);
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2A3F54;");
+        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         // Employee Details Labels and TextFields
         createLabel(root, "Employee ID:", 50, 70);
@@ -44,21 +54,66 @@ public class EmployeePage extends Application {
         phoneField.setText("");
         addressField.setText("");
 
+        Button saveButton = new Button("save");
+        saveButton.setLayoutX(80);
+        saveButton.setLayoutY(280);
+        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
+
+        // Search Button
+        Button searchButton = new Button("Search");
+        searchButton.setLayoutX(310);
+        searchButton.setLayoutY(70);
+        searchButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
+
+        searchButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    int employeeId = Integer.parseInt(employeeIDField.getText().trim());
+                    EmployeePageModel epm = new EmployeePageDAO().searchById(employeeId);
+
+                    if (epm != null) {
+                        nameField.setText(epm.getEmployeeName());
+                        emailField.setText(epm.getEmail());
+                        phoneField.setText(epm.getPhone());
+                        addressField.setText(epm.getAddress());
+                    } else {
+                        showAlert("Search Failed", "Employee not found!");
+                    }
+                } catch (NumberFormatException e) {
+                    showAlert("Error", "Invalid Employee ID format!");
+                }
+            }
+        });
+
+        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                EmployeePageModel epm = new EmployeePageModel();
+                try {
+                    epm.setEmployeeId(Integer.parseInt(employeeIDField.getText()));
+                    epm.setEmployeeName(nameField.getText());
+                    epm.setPhone(phoneField.getText());
+                    epm.setAddress(addressField.getText());
+                    epm.setEmail(emailField.getText());
+
+                    new EmployeePageDAO().Insert(epm);
+
+                } catch (Exception ex) {
+                    showAlert("Error", "Failed to save the information!");
+                }
+            }
+        });
+
         // Action Buttons
         Button updateButton = new Button("Update Info");
-        updateButton.setLayoutX(80);
+        updateButton.setLayoutX(220);
         updateButton.setLayoutY(280);
         updateButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
         updateButton.setOnAction(e -> showAlert("Update Information", "Employee information updated successfully!"));
 
-        Button leaveButton = new Button("Apply for Leave");
-        leaveButton.setLayoutX(220);
-        leaveButton.setLayoutY(280);
-        leaveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
-        leaveButton.setOnAction(e -> showAlert("Leave Application", "Leave application submitted successfully!"));
-
         // Adding Components to Root
-        root.getChildren().addAll(titleLabel, updateButton, leaveButton);
+        root.getChildren().addAll(titleLabel, saveButton, updateButton, searchButton);
 
         // Scene Configuration
         Scene scene = new Scene(root, 400, 350);

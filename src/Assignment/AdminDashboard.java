@@ -13,71 +13,98 @@ import javafx.stage.Stage;
 
 public class AdminDashboard extends Application {
 
-    private StackPane contentArea; // Main content display area
+	private StackPane contentArea;
 
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Admin Dashboard");
+	@Override
+	public void start(Stage primaryStage) {
+		primaryStage.setTitle("Employee Enrollment System Dashboard");
 
-        // Sidebar Menu using GridPane
-        GridPane sidebar = new GridPane();
-        sidebar.setPadding(new Insets(15));
-        sidebar.setHgap(10);
-        sidebar.setVgap(15);
-        sidebar.setStyle("-fx-background-color: #2c3e50; -fx-pref-width: 200px;");
-        sidebar.setAlignment(Pos.TOP_CENTER);
+		// Sidebar Menu
+		GridPane sidebar = new GridPane();
+		sidebar.setPadding(new Insets(15));
+		sidebar.setHgap(10);
+		sidebar.setVgap(15);
+		sidebar.setStyle("-fx-background-color: #2c3e50; -fx-pref-width: 200px;");
+		sidebar.setAlignment(Pos.TOP_CENTER);
 
-        // Sidebar Buttons
-        Button btnEmployees = new Button("Manage Employees");
-        Button btnReports = new Button("Reports");
-        Button btnSettings = new Button("Settings");
-        Button btnLogout = new Button("Logout");
+		// Sidebar Buttons
+		Button btnEnroll = new Button("Employee Enrollment");
+		Button btnVerify = new Button("Document Verification");
+		Button btnUpdate = new Button("Employee Info");
+		Button btnLogout = new Button("Logout");
 
-        // Styling buttons
-        String buttonStyle = "-fx-background-color: #34495e; -fx-text-fill: white; -fx-font-size: 14px;";
-        btnEmployees.setStyle(buttonStyle);
-        btnReports.setStyle(buttonStyle);
-        btnSettings.setStyle(buttonStyle);
-        btnLogout.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px;");
+		// Button Styling
+		String buttonStyle = "-fx-background-color: #34495e; -fx-text-fill: white; -fx-font-size: 14px;";
+		btnEnroll.setStyle(buttonStyle);
+		btnVerify.setStyle(buttonStyle);
+		btnUpdate.setStyle(buttonStyle);
+		btnLogout.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px;");
 
-        // Add buttons to GridPane
-        sidebar.add(btnEmployees, 0, 0);
-        sidebar.add(btnReports, 0, 1);
-        sidebar.add(btnSettings, 0, 2);
-        sidebar.add(btnLogout, 0, 3);
+		// Add buttons to sidebar
+		sidebar.add(btnEnroll, 0, 0);
+		sidebar.add(btnVerify, 0, 1);
+		sidebar.add(btnUpdate, 0, 2);
+		sidebar.add(btnLogout, 0, 3);
 
-        // Main Content Area
-        contentArea = new StackPane();
-        contentArea.setStyle("-fx-background-color: #ecf0f1; -fx-pref-height: 400px;");
-        Label defaultContent = new Label("Welcome to Admin Dashboard");
-        contentArea.getChildren().add(defaultContent);
+		// Main Content Area
+		contentArea = new StackPane();
+		contentArea.setStyle("-fx-background-color: #ecf0f1; -fx-pref-height: 400px;");
+		Label defaultContent = new Label("Welcome to Employee Enrollment System");
+		contentArea.getChildren().add(defaultContent);
 
-        // Button Actions - Change content
-        btnEmployees.setOnAction(e -> setContent("Employee Management Section"));
-        btnReports.setOnAction(e -> setContent("Reports Section"));
-        btnSettings.setOnAction(e -> setContent("Settings Section"));
-        btnLogout.setOnAction(e -> System.out.println("Logging out..."));
+		// Button Actions to Switch Views
+		btnEnroll.setOnAction(e -> openEmployeeEnrollmentWindow());
+		btnVerify.setOnAction(e -> openDocumentVerificationWindow());
+		btnUpdate.setOnAction(e -> openEmployeePageWindow());
+		btnLogout.setOnAction(e -> returnToLogin(primaryStage)); // Logout Action
 
-        // Layout using BorderPane
-        BorderPane layout = new BorderPane();
-        layout.setLeft(sidebar);
-        layout.setCenter(contentArea);
+		// Layout using BorderPane
+		BorderPane layout = new BorderPane();
+		layout.setLeft(sidebar);
+		layout.setCenter(contentArea);
 
-        // Scene Setup
-        Scene scene = new Scene(layout, 800, 500);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+		// Scene Setup
+		Scene scene = new Scene(layout, 800, 500);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
 
-    // Function to update content area dynamically
-    private void setContent(String text) {
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(new Label(text));
-    }
+	// Function to update content dynamically
+	private void setContent(String text) {
+		contentArea.getChildren().clear();
+		contentArea.getChildren().add(new Label(text));
+	}
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	// Method to open Employee Enrollment Window
+	private void openEmployeeEnrollmentWindow() {
+		EmployeeEnrollment employeeEnrollment = new EmployeeEnrollment();
+		Stage employeeEnrollmentStage = new Stage();
+		employeeEnrollment.start(employeeEnrollmentStage); // Start the existing page in the new window
+	}
+
+	// Method to open Document Verification Window
+	private void openDocumentVerificationWindow() {
+		DocumentVerification documentVerification = new DocumentVerification();
+		Stage documentVerificationStage = new Stage();
+		documentVerification.start(documentVerificationStage); // Start the existing page in the new window
+	}
+
+	// Method to open EmployeePage Window
+	private void openEmployeePageWindow() {
+		EmployeePage employeePage = new EmployeePage();
+		Stage employeePageStage = new Stage();
+		employeePage.start(employeePageStage); // Start the existing page in the new window
+	}
+
+	// Logout and return to UserLogin page
+	private void returnToLogin(Stage currentStage) {
+		currentStage.close(); // Close the dashboard window
+		UserLogin userLogin = new UserLogin(); // Assuming UserLogin extends Application
+		Stage loginStage = new Stage();
+		userLogin.start(loginStage); // Open the login window
+	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
 }
-
-	

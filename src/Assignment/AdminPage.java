@@ -18,7 +18,7 @@ package Assignment;
 	        root.setStyle("-fx-background-color: #2A3F54; -fx-padding: 20px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
 
 	        // Title
-	        Label titleLabel = new Label("Admin Dashboard");
+	        Label titleLabel = new Label("Admin Page");
 	        titleLabel.setLayoutX(150);
 	        titleLabel.setLayoutY(20);
 	        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;");
@@ -51,7 +51,7 @@ package Assignment;
 	        Button sendMailButton = new Button("Send Confirmation Mail");
 	        sendMailButton.setLayoutX(120);
 	        sendMailButton.setLayoutY(290);
-	        sendMailButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
+	        sendMailButton.setStyle("-fx-background-color: ; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
 	        sendMailButton.setOnAction(e -> showAlert("Mail Sent", "Confirmation mail sent successfully!"));
 
 	        // Adding Components to Root
