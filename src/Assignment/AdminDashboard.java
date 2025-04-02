@@ -17,7 +17,7 @@ public class AdminDashboard extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Employee Enrollment System Dashboard");
+		primaryStage.setTitle("Admin Dashboard");
 
 		// Sidebar Menu
 		GridPane sidebar = new GridPane();
