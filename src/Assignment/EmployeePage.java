@@ -1,157 +1,255 @@
 package Assignment;
 
-import DAO.EmployeePageDAO;
+import java.util.List;
 
+import DAO.EmployeePageDAO;
 import Model.EmployeePageModel;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class EmployeePage extends Application {
-    private TextField employeeIDField, nameField, emailField, phoneField, addressField;
+	private TextField txtEmployeeId, txtEmployeeName, txtEmail, txtPhone, txtAddress, txtStatus, txtRole;
+	private EmployeePageModel currentEmployee;
+	private boolean editMode = false;
+	private Stage primaryStage;
 
-    @Override
-    public void start(Stage primaryStage) {
-        
-        // Root Pane
-        AnchorPane root = new AnchorPane();
-        root.setStyle("-fx-padding: 20px;"); // Removed the background color, border-radius, and border-color
+	@Override
+	public void start(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		primaryStage.setTitle("Employee Information");
 
-        // Title
-        Label titleLabel = new Label("Employee Page");
-        titleLabel.setLayoutX(150);
-        titleLabel.setLayoutY(20);
-        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+		// Main container
+		VBox mainContainer = new VBox(20);
+		mainContainer.setAlignment(Pos.CENTER);
+		mainContainer.setPadding(new Insets(20));
+		mainContainer.setStyle("-fx-background-color: #f5f5f5;");
 
-        // Employee Details Labels and TextFields
-        createLabel(root, "Employee ID:", 50, 70);
-        employeeIDField = createTextField(root, 160, 70);
+		// Title
+		Label titleLabel = new Label("My Profile");
+		titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
-        createLabel(root, "Name:", 50, 110);
-        nameField = createTextField(root, 160, 110);
+		// Form container
+		GridPane formGrid = new GridPane();
+		formGrid.setAlignment(Pos.CENTER);
+		formGrid.setHgap(20);
+		formGrid.setVgap(15);
+		formGrid.setPadding(new Insets(20));
+		formGrid.setStyle("-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);");
 
-        createLabel(root, "Email:", 50, 150);
-        emailField = createTextField(root, 160, 150);
+		// Employee ID Section
+		Label lblEmployeeId = new Label("Employee ID:");
+		txtEmployeeId = new TextField();
+		txtEmployeeId.setEditable(false);
+		txtEmployeeId.setStyle("-fx-opacity: 0.7;");
+		formGrid.add(lblEmployeeId, 0, 0);
+		formGrid.add(txtEmployeeId, 1, 0);
 
-        createLabel(root, "Phone:", 50, 190);
-        phoneField = createTextField(root, 160, 190);
+		// Employee Details
+		Label lblEmployeeName = new Label("Name:");
+		txtEmployeeName = new TextField();
+		txtEmployeeName.setEditable(false);
+		formGrid.add(lblEmployeeName, 0, 1);
+		formGrid.add(txtEmployeeName, 1, 1);
 
-        createLabel(root, "Address:", 50, 230);
-        addressField = createTextField(root, 160, 230);
+		Label lblEmail = new Label("Email:");
+		txtEmail = new TextField();
+		txtEmail.setEditable(false);
+		formGrid.add(lblEmail, 0, 2);
+		formGrid.add(txtEmail, 1, 2);
 
-        // Default Sample Data
-        employeeIDField.setText("");
-        nameField.setText("");
-        emailField.setText("");
-        phoneField.setText("");
-        addressField.setText("");
+		Label lblPhone = new Label("Phone:");
+		txtPhone = new TextField();
+		txtPhone.setEditable(false);
+		formGrid.add(lblPhone, 0, 3);
+		formGrid.add(txtPhone, 1, 3);
 
-        Button saveButton = new Button("save");
-        saveButton.setLayoutX(80);
-        saveButton.setLayoutY(280);
-        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
+		Label lblAddress = new Label("Address:");
+		txtAddress = new TextField();
+		txtAddress.setEditable(false);
+		formGrid.add(lblAddress, 0, 4);
+		formGrid.add(txtAddress, 1, 4);
+		
+		Label lblRole = new Label("Role:");
+		txtRole = new TextField();
+		txtRole.setEditable(false);
+		formGrid.add(lblRole, 0, 5);
+		formGrid.add(txtRole, 1, 5);
+		
+		Label lblStatus = new Label("Status:");
+		txtStatus = new TextField();
+		txtStatus.setEditable(false);
+		formGrid.add(lblStatus, 0, 6);
+		formGrid.add(txtStatus, 1, 6);
 
-        // Search Button
-        Button searchButton = new Button("Search");
-        searchButton.setLayoutX(310);
-        searchButton.setLayoutY(70);
-        searchButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
+		// Action Buttons
+		HBox buttonBox = new HBox(20);
+		buttonBox.setAlignment(Pos.CENTER);
+		buttonBox.setPadding(new Insets(20, 0, 20, 0)); // Add padding top and bottom
+		
+		Button btnEdit = new Button("Edit Profile");
+		btnEdit.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
+		
+		Button btnSave = new Button("Save Changes");
+		btnSave.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
+		btnSave.setDisable(true);
+		
+		Button btnClose = new Button("Close");
+		btnClose.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
+		btnClose.setMinWidth(100); // Set minimum width
+		
+		buttonBox.getChildren().addAll(btnEdit, btnSave, btnClose);
+		buttonBox.setSpacing(20); // Increase spacing between buttons
+		
+		// Add button box directly to the main container
+		mainContainer.getChildren().addAll(titleLabel, formGrid, buttonBox);
+		VBox.setMargin(buttonBox, new Insets(20, 0, 0, 0)); // Add margin to separate from form
 
-        searchButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                try {
-                    int employeeId = Integer.parseInt(employeeIDField.getText().trim());
-                    EmployeePageModel epm = new EmployeePageDAO().searchById(employeeId);
+		// Load current employee's information
+		loadEmployeeData();
 
-                    if (epm != null) {
-                        nameField.setText(epm.getEmployeeName());
-                        emailField.setText(epm.getEmail());
-                        phoneField.setText(epm.getPhone());
-                        addressField.setText(epm.getAddress());
-                    } else {
-                        showAlert("Search Failed", "Employee not found!");
-                    }
-                } catch (NumberFormatException e) {
-                    showAlert("Error", "Invalid Employee ID format!");
-                }
-            }
-        });
+		// Button Actions
+		btnEdit.setOnAction(e -> {
+			if (!editMode) {
+				// Enable editing for editable fields
+				txtEmployeeName.setEditable(true);
+				txtPhone.setEditable(true);
+				txtAddress.setEditable(true);
+				
+				btnEdit.setText("Cancel");
+				btnSave.setDisable(false);
+				
+				editMode = true;
+			} else {
+				// Cancel editing, restore values from current employee
+				if (currentEmployee != null) {
+					txtEmployeeName.setText(currentEmployee.getEmployeeName());
+					txtPhone.setText(currentEmployee.getPhone());
+					txtAddress.setText(currentEmployee.getAddress());
+				}
+				
+				// Disable editing
+				txtEmployeeName.setEditable(false);
+				txtPhone.setEditable(false);
+				txtAddress.setEditable(false);
+				
+				btnEdit.setText("Edit Profile");
+				btnSave.setDisable(true);
+				
+				editMode = false;
+			}
+		});
 
-        saveButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                EmployeePageModel epm = new EmployeePageModel();
-                try {
-                    epm.setEmployeeId(Integer.parseInt(employeeIDField.getText()));
-                    epm.setEmployeeName(nameField.getText());
-                    epm.setPhone(phoneField.getText());
-                    epm.setAddress(addressField.getText());
-                    epm.setEmail(emailField.getText());
+		btnSave.setOnAction(e -> {
+			try {
+				// Validate inputs
+				if (txtEmployeeName.getText().trim().isEmpty() || 
+					txtPhone.getText().trim().isEmpty()) {
+					showAlert(AlertType.ERROR, "Validation Error", "Name and Phone fields cannot be empty");
+					return;
+				}
+				
+				if (!txtPhone.getText().trim().matches("^[0-9]{10}$")) {
+					showAlert(AlertType.ERROR, "Validation Error", "Phone number must be 10 digits");
+					return;
+				}
+				
+				// Update the current employee model
+				if (currentEmployee != null) {
+					currentEmployee.setEmployeeName(txtEmployeeName.getText().trim());
+					currentEmployee.setPhone(txtPhone.getText().trim());
+					currentEmployee.setAddress(txtAddress.getText().trim());
+					
+					// Update in database
+					EmployeePageDAO dao = new EmployeePageDAO();
+					boolean success = dao.updateEmployee(currentEmployee);
+					
+					if (success) {
+						showAlert(AlertType.INFORMATION, "Success", "Profile updated successfully");
+						
+						// Disable editing
+						txtEmployeeName.setEditable(false);
+						txtPhone.setEditable(false);
+						txtAddress.setEditable(false);
+						
+						btnEdit.setText("Edit Profile");
+						btnSave.setDisable(true);
+						
+						editMode = false;
+					} else {
+						showAlert(AlertType.ERROR, "Error", "Failed to update profile");
+					}
+				}
+			} catch (Exception ex) {
+				showAlert(AlertType.ERROR, "Error", ex.getMessage());
+			}
+		});
 
-                    new EmployeePageDAO().Insert(epm);
+		btnClose.setOnAction(e -> primaryStage.close());
 
-                } catch (Exception ex) {
-                    showAlert("Error", "Failed to save the information!");
-                }
-            }
-        });
+		// Scene setup
+		Scene scene = new Scene(mainContainer, 500, 600);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
 
-        // Action Buttons
-        Button updateButton = new Button("Update Info");
-        updateButton.setLayoutX(220);
-        updateButton.setLayoutY(280);
-        updateButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px;");
-        updateButton.setOnAction(e -> showAlert("Update Information", "Employee information updated successfully!"));
-        saveButton.setOnAction(e -> showAlert("Save Information", "Employee information saved Successfully!"));
-        
-        // Adding Components to Root
-        root.getChildren().addAll(titleLabel, saveButton, updateButton, searchButton);
+	private void loadEmployeeData() {
+		try {
+			// Get current user's email from login session
+			String currentUserEmail = UserLogin.getCurrentUserEmail();
+			String currentUserRole = UserLogin.getCurrentUserRole();
+			
+			if (currentUserEmail != null && !currentUserEmail.isEmpty()) {
+				EmployeePageDAO dao = new EmployeePageDAO();
+				List<EmployeePageModel> employees = dao.searchByEmail(currentUserEmail);
+				
+				if (!employees.isEmpty()) {
+					currentEmployee = employees.get(0);
+					
+					// Update window title based on role
+					if (currentUserRole != null) {
+						primaryStage.setTitle(currentUserRole + " Profile");
+					}
+					
+					// Populate fields
+					txtEmployeeId.setText(String.valueOf(currentEmployee.getEmployeeId()));
+					txtEmployeeName.setText(currentEmployee.getEmployeeName());
+					txtEmail.setText(currentEmployee.getEmail());
+					txtPhone.setText(currentEmployee.getPhone());
+					txtAddress.setText(currentEmployee.getAddress());
+					txtRole.setText(currentEmployee.getRole());
+					txtStatus.setText(currentEmployee.getStatus());
+				} else {
+					showAlert(AlertType.ERROR, "Error", "Could not find your employee information.");
+				}
+			} else {
+				showAlert(AlertType.ERROR, "Error", "No active user session found. Please log in again.");
+			}
+		} catch (Exception ex) {
+			showAlert(AlertType.ERROR, "Error", "Failed to load employee data: " + ex.getMessage());
+		}
+	}
 
-        // Scene Configuration
-        Scene scene = new Scene(root, 400, 350);
-        primaryStage.setTitle("Employee Page");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+	private void showAlert(AlertType type, String title, String message) {
+		Alert alert = new Alert(type);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+		alert.showAndWait();
+	}
 
-    // Utility Method to Create Labels
-    private void createLabel(AnchorPane root, String text, int x, int y) {
-        Label label = new Label(text);
-        label.setLayoutX(x);
-        label.setLayoutY(y);
-        label.setStyle("-fx-text-fill: #333; -fx-font-weight: bold; -fx-font-size: 14px;");
-        root.getChildren().add(label);
-    }
-
-    // Utility Method to Create TextFields
-    private TextField createTextField(AnchorPane root, int x, int y) {
-        TextField textField = new TextField();
-        textField.setLayoutX(x);
-        textField.setLayoutY(y);
-        textField.setStyle("-fx-background-color: #FFF; -fx-border-color: #AAA; -fx-padding: 5px;");
-        root.getChildren().add(textField);
-        return textField;
-    }
-
-    // Method to Show Alert Dialogs
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 }

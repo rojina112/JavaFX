@@ -44,7 +44,7 @@ public class OfficeEmployeeDAO extends Mydatabase {
                 emp.setSalary(rs.getString("salary"));
 
                 employees.add(emp);
-            }
+            } 
         } catch (SQLException ex) {
             System.out.println("Error retrieving employees: " + ex.getMessage());
         }
